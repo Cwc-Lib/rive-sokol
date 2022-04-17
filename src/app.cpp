@@ -87,7 +87,7 @@ static struct App
     ArtboardContext            m_ArtboardContexts[MAX_ARTBOARD_CONTEXTS];
     rive::HRenderer            m_Renderer;
     // GLFW
-    GLFWwindow*                m_Window;
+   // GLFWwindow*                m_Window;
     // Sokol
     sg_shader                  m_MainShader;
     sg_pipeline                m_TessellationIsClippingPipelines[256];
@@ -159,9 +159,11 @@ static bool LoadFileFromPath(const char* path, uint8_t** bytesOut, size_t* bytes
 
 rive::Artboard* LoadArtboardFromData(uint8_t* data, size_t dataLength)
 {
-    rive::File* file    = 0;
+    std::unique_ptr<rive::File> file    = 0;
     rive::BinaryReader reader = rive::BinaryReader(data, dataLength);
-    rive::ImportResult result = rive::File::import(reader, &file);
+    //rive::ImportResult result = rive::File::import(reader, &file);
+	rive::ImportResult result ;
+    file = rive::File::import(reader, &result);
 
     if (result != rive::ImportResult::success)
     {
@@ -185,7 +187,7 @@ static void UpdateArtboardCloneCount(App::ArtboardContext& ctx)
 
             if (artboard->animationCount() > 0)
             {
-                data.m_AnimationInstance = new rive::LinearAnimationInstance(artboard->firstAnimation());
+                data.m_AnimationInstance = new rive::LinearAnimationInstance(artboard->firstAnimation(),artboard);
             }
 
             ctx.m_Artboards.SetCapacity(ctx.m_Artboards.Capacity() + 1);
@@ -249,7 +251,7 @@ static void AddArtboardFromPath(const char* path)
 
             if (artboard->animationCount() > 0)
             {
-                data.m_AnimationInstance = new rive::LinearAnimationInstance(artboard->firstAnimation());
+                data.m_AnimationInstance = new rive::LinearAnimationInstance(artboard->firstAnimation(),artboard);
             }
 
             ctx->m_Artboards.SetCapacity(1);
@@ -279,7 +281,7 @@ static void ReloadArtboardContext(App::ArtboardContext* ctx)
 
         if (data.m_Artboard->animationCount() > 0)
         {
-            data.m_AnimationInstance = new rive::LinearAnimationInstance(data.m_Artboard->firstAnimation());
+            data.m_AnimationInstance = new rive::LinearAnimationInstance(data.m_Artboard->firstAnimation(),data.m_Artboard);
         }
     }
 }
@@ -386,7 +388,7 @@ static void AppDestroyBufferCallback(rive::HBuffer buffer, void* userData)
         buffer = 0;
     }
 }
-
+/*
 static void AppCursorCallback(GLFWwindow* w, double x, double y)
 {
     ImGui::GetIO().MousePos.x = float(x);
@@ -412,10 +414,11 @@ static void AppDropCallback(GLFWwindow* window, int count, const char** paths)
     {
         AddArtboardFromPath(paths[i]);
     }
-}
+}*/
 
 bool AppBootstrap(int argc, char const *argv[])
 {
+/*
     ////////////////////////////////////////////////////
     // GLFW setup
     ////////////////////////////////////////////////////
@@ -436,6 +439,7 @@ bool AppBootstrap(int argc, char const *argv[])
         return false;
     }
 
+
     glfwSetCursorPosCallback(window, AppCursorCallback);
     glfwSetMouseButtonCallback(window, AppMouseButtonCallback);
     glfwSetScrollCallback(window, AppMouseWheelCallback);
@@ -443,9 +447,13 @@ bool AppBootstrap(int argc, char const *argv[])
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+	
+	*/
 
     memset((void*)&g_app, 0, sizeof(g_app));
-    g_app.m_Window = window;
+	
+	
+   // g_app.m_Window = window;
     g_app.m_Camera.Reset();
 
     ////////////////////////////////////////////////////
@@ -734,7 +742,8 @@ void AppUpdateRive(float dt, uint32_t width, uint32_t height)
             if (animation)
             {
                 animation->advance(dt);
-                animation->apply(artboard, 1);
+              //  animation->apply(artboard, 1);
+                animation->apply(1);
             }
 
             artboard->advance(dt);
@@ -1420,7 +1429,7 @@ void AppShutdown()
     rive::destroyRenderer(g_app.m_Renderer);
     rive::destroyContext(g_app.m_Ctx);
     sg_shutdown();
-    glfwTerminate();
+    //glfwTerminate();
 }
 
 void AppRun()
@@ -1546,5 +1555,5 @@ void AppRun()
         sg_commit();
 
   //      glfwSwapBuffers(g_app.m_Window);glfwPollEvents();
-    }
+    //}
 }

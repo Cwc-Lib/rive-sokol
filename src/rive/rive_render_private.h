@@ -68,7 +68,7 @@ namespace rive
 
         Context*                  m_Context;
         SharedRenderPaintBuilder* m_Builder;
-        ContourStroke*            m_Stroke;
+        Stroke*            m_Stroke;
         HBuffer                   m_StrokeBuffer;
         PaintData                 m_Data;
         RenderPaintStyle          m_Style;
