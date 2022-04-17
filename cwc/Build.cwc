@@ -3,8 +3,9 @@
 -{sOut}={_sPlatform}_{_sConfig_Type}_{_sOpt}
 >
 -{p3p}=../third-party/
--{pRive}=../rive-cpp/
--{pRiveSokol}=../src/
+-{pRive}=../rive-cpp_low_level_rendering/
+-{pRiveSokol}=../src_glfw/
+-{pGLFW}=../GLFW/
 >
 -{vIncl}=
 -I ../include/ 
@@ -13,6 +14,7 @@
 -I {p3p}sokol/
 -I {pRive}include/
 -I {pRiveSokol}
+-I {pGLFW}include/
 >
 ;Build Engine
 -c {pRive}/src/  -o obj/{sOut}/lib/rive/ -std=c++2a
