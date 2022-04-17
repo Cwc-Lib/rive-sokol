@@ -1,0 +1,36 @@
+-{vFlag}=""
+>
+-{sOut}={_sPlatform}_{_sConfig_Type}_{_sOpt}
+>
+-{p3p}=../third-party/
+-{pRive}=../rive-cpp/
+>
+-{vIncl}=
+-I ../include/ 
+-I {p3p}
+-I {p3p}imgui/
+-I {p3p}sokol/
+-I {pRive}include/
+>
+;Build Engine
+-c {pRive}/src/  -o obj/{sOut}/lib/rive/ -std=c++2a
+-{vIncl}
+-{vOS_Flag}
+-D_USE_MATH_DEFINES
+>
+;Generate Dynamic Lib
+;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.{_sDynamic}
+>
+;Generate Static Lib
+;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.a
+>
+;Build an Example
+-c ../src/  -o obj/{sOut}/
+-{vIncl}
+-{vOS_Flag}
+>
+;Generate executable
+-o obj/{sOut}/ -#To _out/{sOut}/App.*
+{vOS_FlagLink}
+>
+-#Run

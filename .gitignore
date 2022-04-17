@@ -1,4 +1,7 @@
-.DS_Store
-build
+Build/
 imgui.ini
-.vscode
+obj/
+old/
+*.wdat
+_out/
+*.glsl.h

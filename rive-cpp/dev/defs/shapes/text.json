@@ -1,0 +1,20 @@
+{
+  "name": "Text",
+  "runtime": false,
+  "key": {
+    "int": 110,
+    "string": "text"
+  },
+  "extends": "node.json",
+  "properties": {
+    "value": {
+      "type": "String",
+      "initialValue": "''",
+      "key": {
+        "int": 218,
+        "string": "text"
+      },
+      "description": "The value stored in the Text object."
+    }
+  }
+}

@@ -7,8 +7,8 @@
 #include <sokol_gfx.h>
 #include <sokol_time.h>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+//#define GLFW_INCLUDE_NONE
+//#include <GLFW/glfw3.h>
 
 #include <jc/array.h>
 #include <jc/hashtable.h>
@@ -1439,9 +1439,7 @@ void AppRun()
     uint64_t timeUpdateRive;
     uint64_t timeRenderRive;
 
-    while (!glfwWindowShouldClose(g_app.m_Window))
-    {
-        glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
+   // while (!glfwWindowShouldClose(g_app.m_Window)){glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
 
         dt             = (float) stm_sec(stm_laptime(&timeFrame));
         ImGuiIO& io    = ImGui::GetIO();
@@ -1547,7 +1545,6 @@ void AppRun()
         sg_end_pass();
         sg_commit();
 
-        glfwSwapBuffers(g_app.m_Window);
-        glfwPollEvents();
+  //      glfwSwapBuffers(g_app.m_Window);glfwPollEvents();
     }
 }
