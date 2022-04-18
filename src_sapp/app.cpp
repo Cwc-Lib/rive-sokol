@@ -431,6 +431,7 @@ void init(void) {
     // setup sokol-gfx, sokol-time and sokol-imgui
     sg_desc desc = { };
     desc.context = sapp_sgcontext();
+	desc.buffer_pool_size = 4096;
     sg_setup(&desc);
 /*
     // use sokol-imgui with all default-options (we're not doing
@@ -472,8 +473,8 @@ void init(void) {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-	
 	*/
+	
 
     memset((void*)&g_app, 0, sizeof(g_app));
 	
@@ -484,9 +485,9 @@ void init(void) {
     ////////////////////////////////////////////////////
     // Sokol setup
     ////////////////////////////////////////////////////
-	/*
-    stm_setup();
 	
+    stm_setup();
+	/*
     sg_desc sg_setup_desc = {
         .buffer_pool_size = 4096
     };
