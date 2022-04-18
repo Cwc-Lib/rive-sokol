@@ -18,6 +18,12 @@
 -I {pGLFW}include/
 -I {pTess}Include/
 >
+-{vInclEx}=
+-I {p3p}imgui/
+-I {p3p}sokol/util/
+-I {p3p}nanosvg/src/
+;-I {p3p}Freetype/
+>
 ;Build Engine
 -c {pRive}/src/  -o obj/{sOut}/lib/rive/ -std=c++2a
 -{vIncl}
@@ -30,8 +36,24 @@
 ;Generate Static Lib
 ;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.a
 >
+;Build stb
+-c {p3p}stb/ -o obj/{sOut}/stb/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build imgui
+-c &{p3p}imgui/ -o obj/{sOut}/imgui/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build libtess2
+-c {p3p}libtess2/Source/ -o obj/{sOut}/libtess2/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build sokol
+-c {p3p}sokol/ -o obj/{sOut}/sokol/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
 ;Build an Example
--c {pRiveSokol} -o obj/{sOut}/ -std=c++2a
+-c {pRiveSokol} -o obj/{sOut}/
 -{vIncl}
 -{vOS_Flag}
 >
