@@ -1470,22 +1470,23 @@ void cleanup()
    // while (!glfwWindowShouldClose(g_app.m_Window)){glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
 static void frame(void) {
 
-    int windowWidth          = sapp_width();
-    int windowHeight         = sapp_height();
-    float dt                 = 0.0f;
-    float contourQuality     = 0.8888888888888889f;
-    int renderModeChoice     = (int) rive::getRenderMode(g_app.m_Ctx);
-    float mouseLastX         = 0.0f;
-    float mouseLastY         = 0.0f;
-    float backgroundColor[3] = { 0.25f, 0.25f, 0.25f };
-    bool clippingSupported   = rive::getClippingSupport(g_app.m_Renderer);
+    static int windowWidth          = sapp_width();
+    static int windowHeight         = sapp_height();
+    static float dt                 = 0.0f;
+    static float contourQuality     = 0.8888888888888889f;
+    static int renderModeChoice     = (int) rive::getRenderMode(g_app.m_Ctx);
+    static float mouseLastX         = 0.0f;
+    static float mouseLastY         = 0.0f;
+    static float backgroundColor[3] = { 0.25f, 0.25f, 0.25f };
+    static bool clippingSupported   = rive::getClippingSupport(g_app.m_Renderer);
 	
-    uint64_t timeFrame;
-    uint64_t timeUpdateRive;
-    uint64_t timeRenderRive;
+    static uint64_t timeFrame;
+    static uint64_t timeUpdateRive;
+    static uint64_t timeRenderRive;
 	
 
         dt             = (float) stm_sec(stm_laptime(&timeFrame));
+		printf("\ndt:%f", dt);
         ImGuiIO& io    = ImGui::GetIO();
         io.DisplaySize = ImVec2(float(windowWidth), float(windowHeight));
         io.DeltaTime   = dt;

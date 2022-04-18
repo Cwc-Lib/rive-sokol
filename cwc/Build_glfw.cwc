@@ -1,6 +1,6 @@
 -{vFlag}=""
 >
--{sOut}={_sPlatform}_{_sConfig_Type}_{_sOpt}
+-{sOut}=glfw_{_sPlatform}_{_sConfig_Type}_{_sOpt}
 >
 -{p3p}=../third-party/
 -{pRive}=../rive-cpp_low_level_rendering/
