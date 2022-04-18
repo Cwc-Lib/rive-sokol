@@ -59,7 +59,6 @@ namespace rive
 
 		virtual RenderPaint* makeRenderPaint() = 0;
 		virtual RenderPath* makeRenderPath() = 0;
-		virtual RenderImage* makeRenderImage() = 0;
 		virtual bool initialize(void* data) = 0;
 		bool initialize() { return initialize(nullptr); }
 

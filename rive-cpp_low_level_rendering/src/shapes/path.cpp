@@ -1,7 +1,3 @@
-#include <cassert>
-#define _USE_MATH_DEFINES
-#include <algorithm>
-
 #include "rive/shapes/path.hpp"
 #include "rive/math/circle_constant.hpp"
 #include "rive/renderer.hpp"
@@ -10,6 +6,7 @@
 #include "rive/shapes/path_vertex.hpp"
 #include "rive/shapes/shape.hpp"
 #include "rive/shapes/straight_vertex.hpp"
+#include <cassert>
 
 using namespace rive;
 

@@ -5,15 +5,6 @@
 
 namespace rive
 {
-	class NoOpRenderImage : public RenderImage
-	{
-	public:
-		bool decode(const uint8_t* bytes, std::size_t size) override
-		{
-			return true;
-		}
-	};
-
 	class NoOpRenderPaint : public RenderPaint
 	{
 	public:
@@ -100,15 +91,12 @@ namespace rive
 
 	class NoOpRenderer : public Renderer
 	{
-		void save() override {}
-		void restore() override {}
-		void transform(const Mat2D& transform) override {}
-		void drawPath(RenderPath* path, RenderPaint* paint) override {}
-		void clipPath(RenderPath* path) override {}
-		void
-		drawImage(RenderImage* image, BlendMode value, float opacity) override
-		{
-		}
+		void save() {}
+		void restore() {}
+		void transform(const Mat2D& transform) {}
+		void translate(float x, float y) {}
+		void drawPath(RenderPath* path, RenderPaint* paint) {}
+		void clipPath(RenderPath* path) {}
 	};
 
 } // namespace rive

@@ -13,7 +13,6 @@
 #include "rive/animation/animation_state.hpp"
 #include "rive/animation/state_instance.hpp"
 #include "rive/animation/animation_state_instance.hpp"
-#include <algorithm>
 
 using namespace rive;
 namespace rive

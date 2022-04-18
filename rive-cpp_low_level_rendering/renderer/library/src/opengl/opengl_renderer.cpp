@@ -115,13 +115,6 @@ bool OpenGLRenderer::initialize(void* data)
 	return true;
 }
 
-void OpenGLRenderer::drawImage(RenderImage* image,
-                               BlendMode value,
-                               float opacity)
-{
-	// TODO: implement drawImage
-}
-
 void OpenGLRenderer::drawPath(RenderPath* path, RenderPaint* paint)
 {
 	auto glPaint = static_cast<OpenGLRenderPaint*>(paint);
@@ -322,10 +315,6 @@ RenderPaint* OpenGLRenderer::makeRenderPaint()
 	return new OpenGLRenderPaint();
 }
 RenderPath* OpenGLRenderer::makeRenderPath() { return new OpenGLRenderPath(); }
-RenderImage* OpenGLRenderer::makeRenderImage()
-{
-	return new OpenGLRenderImage();
-}
 
 void OpenGLRenderer::updateIndexBuffer(std::size_t contourLength)
 {

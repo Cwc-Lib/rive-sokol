@@ -1,5 +1,4 @@
 #include "rive/artboard.hpp"
-#include "rive/backboard.hpp"
 #include "rive/animation/animation.hpp"
 #include "rive/dependency_sorter.hpp"
 #include "rive/draw_rules.hpp"
@@ -9,9 +8,6 @@
 #include "rive/node.hpp"
 #include "rive/renderer.hpp"
 #include "rive/shapes/paint/shape_paint.hpp"
-#include "rive/importers/import_stack.hpp"
-#include "rive/importers/backboard_importer.hpp"
-#include "rive/nested_artboard.hpp"
 #include <unordered_map>
 
 using namespace rive;
@@ -91,6 +87,7 @@ StatusCode Artboard::initialize()
 			return code;
 		}
 	}
+
 	// Store a map of the drawRules to make it easier to lookup the matching
 	// rule for a transform component.
 	std::unordered_map<Core*, DrawRules*> componentDrawRules;
@@ -110,28 +107,21 @@ StatusCode Artboard::initialize()
 		{
 			return code;
 		}
-		switch (object->coreType())
+		if (object->is<DrawRules>())
 		{
-			case DrawRulesBase::typeKey:
+			DrawRules* rules = reinterpret_cast<DrawRules*>(object);
+			Core* component = resolve(rules->parentId());
+			if (component != nullptr)
 			{
-				DrawRules* rules = reinterpret_cast<DrawRules*>(object);
-				Core* component = resolve(rules->parentId());
-				if (component != nullptr)
-				{
-					componentDrawRules[component] = rules;
-				}
-				else
-				{
-					fprintf(stderr,
-					        "Artboard::initialize - Draw rule targets missing "
-					        "component width id %d\n",
-					        rules->parentId());
-				}
-				break;
+				componentDrawRules[component] = rules;
 			}
-			case NestedArtboardBase::typeKey:
-				m_NestedArtboards.push_back(object->as<NestedArtboard>());
-				break;
+			else
+			{
+				fprintf(stderr,
+				        "Artboard::initialize - Draw rule targets missing "
+				        "component width id %d\n",
+				        rules->parentId());
+			}
 		}
 	}
 
@@ -151,8 +141,8 @@ StatusCode Artboard::initialize()
 		}
 	}
 
-	// Multi-level references have been built up, now we can
-	// actually mark what's dependent on what.
+	// Multi-level references have been built up, now we can actually mark
+	// what's dependent on what.
 	for (auto object : m_Objects)
 	{
 		if (object == nullptr)
@@ -184,8 +174,8 @@ StatusCode Artboard::initialize()
 	sortDependencies();
 
 	DrawTarget root;
-	// Build up the draw order. Look for draw targets and build
-	// their dependencies.
+	// Build up the draw order. Look for draw targets and build their
+	// dependencies.
 	for (auto object : m_Objects)
 	{
 		if (object == nullptr)
@@ -200,9 +190,8 @@ StatusCode Artboard::initialize()
 			auto dependentRules = target->drawable()->flattenedDrawRules;
 			if (dependentRules != nullptr)
 			{
-				// Because we don't store targets on rules, we need
-				// to find the targets that belong to this rule
-				// here.
+				// Because we don't store targets on rules, we need to find the
+				// targets that belong to this rule here.
 				for (auto object : m_Objects)
 				{
 					if (object != nullptr && object->is<DrawTarget>())
@@ -344,11 +333,6 @@ void Artboard::addStateMachine(StateMachine* object)
 	m_StateMachines.push_back(object);
 }
 
-void Artboard::addNestedArtboard(NestedArtboard* artboard)
-{
-	m_NestedArtboards.push_back(artboard);
-}
-
 Core* Artboard::resolve(int id) const
 {
 	if (id < 0 || id >= static_cast<int>(m_Objects.size()))
@@ -362,9 +346,9 @@ void Artboard::onComponentDirty(Component* component)
 {
 	m_Dirt |= ComponentDirt::Components;
 
-	/// If the order of the component is less than the current dirt
-	/// depth, update the dirt depth so that the update loop can break
-	/// out early and re-run (something up the tree is dirty).
+	/// If the order of the component is less than the current dirt depth,
+	/// update the dirt depth so that the update loop can break out early
+	/// and re-run (something up the tree is dirty).
 	if (component->graphOrder() < m_DirtDepth)
 	{
 		m_DirtDepth = component->graphOrder();
@@ -385,15 +369,7 @@ void Artboard::update(ComponentDirt value)
 	if (hasDirt(value, ComponentDirt::Path))
 	{
 		m_ClipPath->reset();
-		if (m_FrameOrigin)
-		{
-			m_ClipPath->addRect(0.0f, 0.0f, width(), height());
-		}
-		else
-		{
-			m_ClipPath->addRect(
-			    -width() * originX(), -height() * originY(), width(), height());
-		}
+		m_ClipPath->addRect(0.0f, 0.0f, width(), height());
 		m_BackgroundPath->addRect(
 		    -width() * originX(), -height() * originY(), width(), height());
 	}
@@ -408,7 +384,7 @@ bool Artboard::updateComponents()
 		auto count = m_DependencyOrder.size();
 		while (hasDirt(ComponentDirt::Components) && step < maxSteps)
 		{
-			m_Dirt = m_Dirt & ~ComponentDirt::Components;
+			// m_Dirt = m_Dirt & ~ComponentDirt::Components;
 
 			// Track dirt depth here so that if something else marks
 			// dirty, we restart.
@@ -424,13 +400,13 @@ bool Artboard::updateComponents()
 				component->m_Dirt = ComponentDirt::None;
 				component->update(d);
 
-				// If the update changed the dirt depth by adding dirt
-				// to something before us (in the DAG), early out and
-				// re-run the update.
+				// If the update changed the dirt depth by adding dirt to
+				// something before us (in the DAG), early out and re-run
+				// the update.
 				if (m_DirtDepth < i)
 				{
-					// We put this in here just to know if we need to
-					// keep this around...
+					// We put this in here just to know if we need to keep
+					// this around...
 					assert(false);
 					break;
 				}
@@ -442,14 +418,7 @@ bool Artboard::updateComponents()
 	return false;
 }
 
-bool Artboard::advance(double elapsedSeconds)
-{
-	for (auto nestedArtboard : m_NestedArtboards)
-	{
-		nestedArtboard->advance(elapsedSeconds);
-	}
-	return updateComponents();
-}
+bool Artboard::advance(double elapsedSeconds) { return updateComponents(); }
 
 void Artboard::draw(Renderer* renderer)
 {
@@ -459,13 +428,10 @@ void Artboard::draw(Renderer* renderer)
 		renderer->clipPath(m_ClipPath->renderPath());
 	}
 
-	if (m_FrameOrigin)
-	{
-		Mat2D artboardTransform;
-		artboardTransform[4] = width() * originX();
-		artboardTransform[5] = height() * originY();
-		renderer->transform(artboardTransform);
-	}
+	Mat2D artboardTransform;
+	artboardTransform[4] = width() * originX();
+	artboardTransform[5] = height() * originY();
+	renderer->transform(artboardTransform);
 	for (auto shapePaint : m_ShapePaints)
 	{
 		shapePaint->draw(renderer, m_BackgroundPath);
@@ -548,15 +514,19 @@ StateMachine* Artboard::stateMachine(size_t index) const
 
 Artboard* Artboard::instance(Artboard* instanceObject) const
 {
-	std::vector<Core*>& cloneObjects = instanceObject->m_Objects;
-	cloneObjects.push_back(instanceObject);
+	// Must be a fresh instance.
+	assert(instanceObject->m_Objects.empty());
+
+	instanceObject->m_Objects.push_back(instanceObject);
 
 	// Skip first object (artboard).
 	auto itr = m_Objects.begin();
 	while (++itr != m_Objects.end())
 	{
 		auto object = *itr;
-		cloneObjects.push_back(object == nullptr ? nullptr : object->clone());
+
+		instanceObject->m_Objects.push_back(
+		    object == nullptr ? nullptr : object->clone());
 	}
 
 	for (auto animation : m_Animations)
@@ -583,35 +553,4 @@ Artboard* Artboard::instance() const
 {
 	auto artboardClone = clone()->as<Artboard>();
 	return instance(artboardClone);
-}
-
-void Artboard::frameOrigin(bool value)
-{
-	if (value == m_FrameOrigin)
-	{
-		return;
-	}
-	m_FrameOrigin = value;
-	addDirt(ComponentDirt::Path);
-}
-
-StatusCode Artboard::import(ImportStack& importStack)
-{
-	auto backboardImporter =
-	    importStack.latest<BackboardImporter>(Backboard::typeKey);
-	if (backboardImporter == nullptr)
-	{
-		return StatusCode::MissingObject;
-	}
-
-	StatusCode result = Super::import(importStack);
-	if (result == StatusCode::Ok)
-	{
-		backboardImporter->addArtboard(this);
-	}
-	else
-	{
-		backboardImporter->addMissingArtboard();
-	}
-	return result;
 }

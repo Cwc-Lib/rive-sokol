@@ -3,6 +3,7 @@
 #include "rive/generated/constraints/ik_constraint_base.hpp"
 #include "rive/math/mat2d.hpp"
 #include "rive/math/transform_components.hpp"
+#include <stdio.h>
 #include <vector>
 
 namespace rive

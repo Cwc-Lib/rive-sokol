@@ -33,10 +33,6 @@ void Shape::pathChanged() { m_PathComposer.addDirt(ComponentDirt::Path, true); }
 
 void Shape::draw(Renderer* renderer)
 {
-	if (renderOpacity() == 0.0f)
-	{
-		return;
-	}
 	auto shouldRestore = clip(renderer);
 
 	for (auto shapePaint : m_ShapePaints)
@@ -78,7 +74,7 @@ void Shape::buildDependencies()
 	// blend mode changes.
 	for (auto paint : m_ShapePaints)
 	{
-		paint->blendMode(blendMode());
+		paint->blendMode((BlendMode)blendModeValue());
 	}
 }
 

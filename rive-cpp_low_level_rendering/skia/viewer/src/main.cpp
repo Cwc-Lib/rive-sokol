@@ -6,7 +6,7 @@
 #include "GLFW/glfw3.h"
 
 #include "GrBackendSurface.h"
-#include "GrDirectContext.h"
+#include "GrContext.h"
 #include "SkCanvas.h"
 #include "SkColorSpace.h"
 #include "SkSurface.h"
@@ -56,10 +56,7 @@ void initStateMachine(int index)
 		fprintf(stderr, "failed to import file\n");
 		return;
 	}
-	auto sourceArtboard = file->artboard();
-	// Artboard should always be instance and hence must be deleted.
-	delete artboard;
-	artboard = sourceArtboard->instance();
+	artboard = file->artboard();
 	artboard->advance(0.0f);
 
 	delete animationInstance;
@@ -93,10 +90,7 @@ void initAnimation(int index)
 		fprintf(stderr, "failed to import file\n");
 		return;
 	}
-	auto sourceArtboard = file->artboard();
-	// Artboard should always be instance and hence must be deleted.
-	delete artboard;
-	artboard = sourceArtboard->instance();
+	artboard = file->artboard();
 	artboard->advance(0.0f);
 
 	delete animationInstance;
@@ -183,7 +177,7 @@ int main()
 
 	// Setup Skia
 	GrContextOptions options;
-	sk_sp<GrDirectContext> context = GrDirectContext::MakeGL(nullptr, options);
+	sk_sp<GrContext> context = GrContext::MakeGL(nullptr, options);
 	GrGLFramebufferInfo framebufferInfo;
 	framebufferInfo.fFBOID = 0;
 	framebufferInfo.fFormat = GL_RGBA8;

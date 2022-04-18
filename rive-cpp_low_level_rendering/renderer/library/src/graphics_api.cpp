@@ -76,10 +76,4 @@ namespace rive
 		assert(g_GraphicsApi != nullptr);
 		return g_GraphicsApi->makeRenderPath();
 	}
-
-	RenderImage* makeRenderImage()
-	{
-		assert(g_GraphicsApi != nullptr);
-		return g_GraphicsApi->makeRenderImage();
-	}
 } // namespace rive

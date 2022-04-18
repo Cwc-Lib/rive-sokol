@@ -4,7 +4,6 @@
 #include "SkCanvas.h"
 #include "SkPaint.h"
 #include "SkPath.h"
-#include "SkImage.h"
 #include "rive/renderer.hpp"
 #include <vector>
 
@@ -93,19 +92,9 @@ namespace rive
 		void invalidateStroke() override {}
 	};
 
-	class SkiaRenderImage : public RenderImage
-	{
-	private:
-		sk_sp<SkImage> m_SkImage;
-
-	public:
-		sk_sp<SkImage> skImage() const { return m_SkImage; };
-		bool decode(const uint8_t* bytes, std::size_t size) override;
-	};
-
 	class SkiaRenderer : public Renderer
 	{
-	protected:
+	private:
 		SkCanvas* m_Canvas;
 
 	public:
@@ -114,8 +103,6 @@ namespace rive
 		void restore() override;
 		void transform(const Mat2D& transform) override;
 		void drawPath(RenderPath* path, RenderPaint* paint) override;
-		void
-		drawImage(RenderImage* image, BlendMode value, float opacity) override;
 		void clipPath(RenderPath* path) override;
 	};
 } // namespace rive

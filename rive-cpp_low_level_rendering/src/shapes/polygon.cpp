@@ -1,9 +1,7 @@
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include "rive/shapes/polygon.hpp"
 #include "rive/shapes/star.hpp"
 #include "rive/shapes/straight_vertex.hpp"
+#include <cmath>
 
 using namespace rive;
 

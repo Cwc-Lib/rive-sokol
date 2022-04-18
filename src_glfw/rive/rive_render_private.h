@@ -144,7 +144,6 @@ namespace rive
         StencilToCoverRenderer(Context* ctx);
         ~StencilToCoverRenderer();
         void drawPath(RenderPath* path, RenderPaint* paint) override;
-		void drawImage(RenderImage* image, BlendMode value, float opacity)override;
         void applyClipping();
         void applyClipPath(StencilToCoverRenderPath* path, const Mat2D& transform);
     };
@@ -173,10 +172,8 @@ namespace rive
     class TessellationRenderer : public SharedRenderer
     {
     public:
-	
         TessellationRenderer(Context* ctx);
         void drawPath(RenderPath* path, RenderPaint* paint) override;
-		void drawImage(RenderImage* image, BlendMode value, float opacity)override;
         void applyClipping();
     };
 
