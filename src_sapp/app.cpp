@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #define SOKOL_IMPL
-#define SOKOL_GLCORE33
+//#define SOKOL_GLCORE33
 #define SOKOL_IMGUI_IMPL
 
 #include "sokol_app.h"

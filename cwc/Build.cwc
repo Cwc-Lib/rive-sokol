@@ -72,6 +72,6 @@
 >
 ;Generate executable
 -o obj/{sOut}/ -#To {pOut}App.*
-{vOS_FlagLink}
+-{vOS_FlagLink} -{vPreloadRc}
 >
 -#Run
