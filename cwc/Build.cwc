@@ -5,6 +5,7 @@
 -{p3p}=../third-party/
 -{pRive}=../rive-cpp_low_level_rendering/
 -{pRiveSokol}=../src_glfw/
+-{pTess}={p3p}libtess2/
 -{pGLFW}=../GLFW/
 >
 -{vIncl}=
@@ -15,6 +16,7 @@
 -I {pRive}include/
 -I {pRiveSokol}
 -I {pGLFW}include/
+-I {pTess}Include/
 >
 ;Build Engine
 -c {pRive}/src/  -o obj/{sOut}/lib/rive/ -std=c++2a
