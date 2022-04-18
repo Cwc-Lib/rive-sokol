@@ -36,11 +36,15 @@
 -DLOW_LEVEL_RENDERING
 -DCONTOUR_RECURSIVE
 >
+;Build libtess2
+-c {p3p}libtess2/Source/ -o obj/{sOut}/lib/libtess2/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
 ;Generate Dynamic Lib
-;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.{_sDynamic}
+;-o obj/{sOut}/lib/ -#To Lib/{sOut}/rive.{_sDynamic}
 >
 ;Generate Static Lib
-;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.a
+-o obj/{sOut}/lib/ -#To Lib/{sOut}/rive.a
 >
 ;Build stb
 -c {p3p}stb/ -o obj/{sOut}/stb/
@@ -48,10 +52,6 @@
 >
 ;Build imgui
 -c &{p3p}imgui/ -o obj/{sOut}/imgui/
--{vIncl} -{vOS_Flag} -{vInclEx}
->
-;Build libtess2
--c {p3p}libtess2/Source/ -o obj/{sOut}/libtess2/
 -{vIncl} -{vOS_Flag} -{vInclEx}
 >
 ;Build sokol
