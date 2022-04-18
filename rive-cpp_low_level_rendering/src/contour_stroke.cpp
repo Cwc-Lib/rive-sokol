@@ -1,4 +1,5 @@
 #ifdef LOW_LEVEL_RENDERING
+#include <cassert>
 #include "rive/contour_stroke.hpp"
 #include "rive/contour_render_path.hpp"
 #include "rive/math/vec2d.hpp"
