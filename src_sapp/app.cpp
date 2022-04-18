@@ -425,8 +425,7 @@ static void AppDropCallback(GLFWwindow* window, int count, const char** paths)
     }
 }*/
 
-
-
+void add_assets(void);
 void init(void) {
     // setup sokol-gfx, sokol-time and sokol-imgui
     sg_desc desc = { };
@@ -661,6 +660,10 @@ void init(void) {
     {
         AddArtboardFromPath(argv[i]);
     }*/
+
+
+	add_assets();
+
 
     ////////////////////////////////////////////////////
     // Imgui setup
@@ -1467,8 +1470,8 @@ void cleanup()
    // while (!glfwWindowShouldClose(g_app.m_Window)){glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
 static void frame(void) {
 
-    int windowWidth          = 0;
-    int windowHeight         = 0;
+    int windowWidth          = sapp_width();
+    int windowHeight         = sapp_height();
     float dt                 = 0.0f;
     float contourQuality     = 0.8888888888888889f;
     int renderModeChoice     = (int) rive::getRenderMode(g_app.m_Ctx);
@@ -1606,6 +1609,13 @@ sapp_desc sokol_main(int argc, char* argv[]) {
     desc.ios_keyboard_resizes_canvas = false;
     desc.icon.sokol_default = true;
     return desc;
+}
+
+
+void add_assets(void){
+	///// Add some assets
+	AddArtboardFromPath("Rc/runner.riv");
+	/////
 }
 
 

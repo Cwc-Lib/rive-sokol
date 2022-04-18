@@ -9,6 +9,8 @@
 -{pTess}={p3p}libtess2/
 ;-{pGLFW}=../GLFW/
 ;-{pGLFWsrc}=../GLFW/src/
+-{pRc}=../Rc/
+-{pOut}=_out/{sOut}/
 >
 -{vIncl}=
 -I ../include/ 
@@ -61,8 +63,10 @@
 -{vIncl}
 -{vOS_Flag}
 >
+-#Copy {pRc} {pOut}Rc/
+>
 ;Generate executable
--o obj/{sOut}/ -#To _out/{sOut}/App.*
+-o obj/{sOut}/ -#To {pOut}App.*
 {vOS_FlagLink}
 >
 -#Run
