@@ -4,8 +4,8 @@
 #include <jc/array.h>
 
 #include <rive/artboard.hpp>
-#include <rive/shapes/path.hpp>
-#include <rive/shapes/paint/stroke.hpp>
+#include <rive/contour_render_path.hpp>
+#include <rive/contour_stroke.hpp>
 
 #include "rive/rive_render_api.h"
 #include "rive/rive_render_private.h"
@@ -79,7 +79,7 @@ namespace rive
 
         if (m_Style == RenderPaintStyle::stroke)
         {
-            m_Stroke = new Stroke();
+            m_Stroke = new ContourStroke();
             m_StrokeDirty = true;
         }
         else
@@ -227,7 +227,7 @@ namespace rive
             return;
         }
 
-       Stroke* stroke = renderPaint->m_Stroke;
+        ContourStroke* stroke = renderPaint->m_Stroke;
 
         size_t start, end;
         stroke->nextRenderOffset(start, end);
