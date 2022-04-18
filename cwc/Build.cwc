@@ -36,6 +36,11 @@
 -DLOW_LEVEL_RENDERING
 -DCONTOUR_RECURSIVE
 >
+;Build rive sokol
+-c {pRiveSokol}rive/ -o obj/{sOut}/lib/rive_sokol/
+-{vIncl}
+-{vOS_Flag}
+>
 ;Build libtess2
 -c {p3p}libtess2/Source/ -o obj/{sOut}/lib/libtess2/
 -{vIncl} -{vOS_Flag} -{vInclEx}
@@ -59,7 +64,7 @@
 -{vIncl} -{vOS_Flag} -{vInclEx} -DSOKOL_GLCORE33
 >
 ;Build an Example
--c {pRiveSokol} -o obj/{sOut}/
+-c &{pRiveSokol} -o obj/{sOut}/
 -{vIncl}
 -{vOS_Flag}
 >

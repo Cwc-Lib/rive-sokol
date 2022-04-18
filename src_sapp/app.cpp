@@ -1461,13 +1461,9 @@ void cleanup()
 	
     //simgui_shutdown();
     sg_shutdown();
-    //glfwTerminate();
 }
 
 
-
-
-   // while (!glfwWindowShouldClose(g_app.m_Window)){glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
 static void frame(void) {
 
     static int windowWidth          = sapp_width();
@@ -1486,7 +1482,6 @@ static void frame(void) {
 	
 
         dt             = (float) stm_sec(stm_laptime(&timeFrame));
-		printf("\ndt:%f", dt);
         ImGuiIO& io    = ImGui::GetIO();
         io.DisplaySize = ImVec2(float(windowWidth), float(windowHeight));
         io.DeltaTime   = dt;
