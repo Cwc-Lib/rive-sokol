@@ -30,6 +30,8 @@
 -{vIncl}
 -{vOS_Flag}
 -D_USE_MATH_DEFINES
+-DLOW_LEVEL_RENDERING
+-DCONTOUR_RECURSIVE
 >
 ;Generate Dynamic Lib
 ;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.{_sDynamic}
