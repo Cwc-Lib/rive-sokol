@@ -1,14 +1,22 @@
 #include <stdio.h>
 
-#include <imgui.h>
-
 #define SOKOL_IMPL
 #define SOKOL_GLCORE33
-#include <sokol_gfx.h>
-#include <sokol_time.h>
+#define SOKOL_IMGUI_IMPL
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
+#include "sokol_app.h"
+#include "sokol_gfx.h"
+#include "sokol_glue.h"
+#include "imgui.h"
+
+#include "sokol_time.h"
+
+
+//#include <sokol_gfx.h>
+//#include <sokol_time.h>
+
+//#define GLFW_INCLUDE_NONE
+//#include <GLFW/glfw3.h>
 
 #include <jc/array.h>
 #include <jc/hashtable.h>
@@ -87,7 +95,7 @@ static struct App
     ArtboardContext            m_ArtboardContexts[MAX_ARTBOARD_CONTEXTS];
     rive::HRenderer            m_Renderer;
     // GLFW
-    GLFWwindow*                m_Window;
+   // GLFWwindow*                m_Window;
     // Sokol
     sg_shader                  m_MainShader;
     sg_pipeline                m_TessellationIsClippingPipelines[256];
@@ -157,6 +165,7 @@ static bool LoadFileFromPath(const char* path, uint8_t** bytesOut, size_t* bytes
     return true;
 }
 
+
 rive::Artboard* LoadArtboardFromData(uint8_t* data, size_t dataLength)
 {
     rive::File* file    = 0;
@@ -170,6 +179,7 @@ rive::Artboard* LoadArtboardFromData(uint8_t* data, size_t dataLength)
 
     return file->artboard();
 }
+
 
 static void UpdateArtboardCloneCount(App::ArtboardContext& ctx)
 {
@@ -210,6 +220,7 @@ static void UpdateArtboardCloneCount(App::ArtboardContext& ctx)
         }
     }
 }
+
 
 static void AddArtboardFromPath(const char* path)
 {
@@ -386,7 +397,7 @@ static void AppDestroyBufferCallback(rive::HBuffer buffer, void* userData)
         buffer = 0;
     }
 }
-
+/*
 static void AppCursorCallback(GLFWwindow* w, double x, double y)
 {
     ImGui::GetIO().MousePos.x = float(x);
@@ -412,10 +423,27 @@ static void AppDropCallback(GLFWwindow* window, int count, const char** paths)
     {
         AddArtboardFromPath(paths[i]);
     }
-}
+}*/
 
-bool AppBootstrap(int argc, char const *argv[])
-{
+
+
+void init(void) {
+    // setup sokol-gfx, sokol-time and sokol-imgui
+    sg_desc desc = { };
+    desc.context = sapp_sgcontext();
+    sg_setup(&desc);
+/*
+    // use sokol-imgui with all default-options (we're not doing
+    // multi-sampled rendering or using non-default pixel formats)
+    simgui_desc_t simgui_desc = { };
+    simgui_setup(&simgui_desc);
+
+    // initial clear color
+    pass_action.colors[0].action = SG_ACTION_CLEAR;
+    pass_action.colors[0].value = { 0.0f, 0.5f, 0.7f, 1.0f };*/
+
+
+/*
     ////////////////////////////////////////////////////
     // GLFW setup
     ////////////////////////////////////////////////////
@@ -436,6 +464,7 @@ bool AppBootstrap(int argc, char const *argv[])
         return false;
     }
 
+
     glfwSetCursorPosCallback(window, AppCursorCallback);
     glfwSetMouseButtonCallback(window, AppMouseButtonCallback);
     glfwSetScrollCallback(window, AppMouseWheelCallback);
@@ -443,20 +472,26 @@ bool AppBootstrap(int argc, char const *argv[])
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+	
+	*/
 
     memset((void*)&g_app, 0, sizeof(g_app));
-    g_app.m_Window = window;
+	
+	
+   // g_app.m_Window = window;
     g_app.m_Camera.Reset();
 
     ////////////////////////////////////////////////////
     // Sokol setup
     ////////////////////////////////////////////////////
+	/*
     stm_setup();
+	
     sg_desc sg_setup_desc = {
         .buffer_pool_size = 4096
     };
     sg_setup(&sg_setup_desc);
-
+*/
     // Main tessellation pipeline
     sg_pipeline_desc tessellationPipeline               = {};
     tessellationPipeline.shader                         = sg_make_shader(rive_shader_shader_desc(sg_query_backend()));
@@ -620,11 +655,11 @@ bool AppBootstrap(int argc, char const *argv[])
     rive::setRenderMode(g_app.m_Ctx, rive::MODE_STENCIL_TO_COVER);
     g_app.m_Renderer = rive::createRenderer(g_app.m_Ctx);
     rive::setClippingSupport(g_app.m_Renderer, true);
-
+/*
     for (int i = 1; i < argc; ++i)
     {
         AddArtboardFromPath(argv[i]);
-    }
+    }*/
 
     ////////////////////////////////////////////////////
     // Imgui setup
@@ -702,7 +737,7 @@ bool AppBootstrap(int argc, char const *argv[])
     imguiPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
     imguiPipelineDesc.colors[0].write_mask           = SG_COLORMASK_RGB;
     g_app.m_ImguiPipeline                            = sg_make_pipeline(&imguiPipelineDesc);
-    return true;
+  
 }
 
 void AppUpdateRive(float dt, uint32_t width, uint32_t height)
@@ -734,7 +769,7 @@ void AppUpdateRive(float dt, uint32_t width, uint32_t height)
             if (animation)
             {
                 animation->advance(dt);
-                animation->apply(artboard, 1);
+               animation->apply(artboard, 1);
             }
 
             artboard->advance(dt);
@@ -1415,16 +1450,22 @@ void AppConfigure(rive::RenderMode renderMode, float contourQuality, float* back
     rive::setContourQuality(g_app.m_Renderer, contourQuality);
 }
 
-void AppShutdown()
+void cleanup()
 {
     rive::destroyRenderer(g_app.m_Renderer);
     rive::destroyContext(g_app.m_Ctx);
+	
+    //simgui_shutdown();
     sg_shutdown();
-    glfwTerminate();
+    //glfwTerminate();
 }
 
-void AppRun()
-{
+
+
+
+   // while (!glfwWindowShouldClose(g_app.m_Window)){glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
+static void frame(void) {
+
     int windowWidth          = 0;
     int windowHeight         = 0;
     float dt                 = 0.0f;
@@ -1434,14 +1475,11 @@ void AppRun()
     float mouseLastY         = 0.0f;
     float backgroundColor[3] = { 0.25f, 0.25f, 0.25f };
     bool clippingSupported   = rive::getClippingSupport(g_app.m_Renderer);
-
+	
     uint64_t timeFrame;
     uint64_t timeUpdateRive;
     uint64_t timeRenderRive;
-
-    while (!glfwWindowShouldClose(g_app.m_Window))
-    {
-        glfwGetFramebufferSize(g_app.m_Window, &windowWidth, &windowHeight);
+	
 
         dt             = (float) stm_sec(stm_laptime(&timeFrame));
         ImGuiIO& io    = ImGui::GetIO();
@@ -1547,7 +1585,27 @@ void AppRun()
         sg_end_pass();
         sg_commit();
 
-        glfwSwapBuffers(g_app.m_Window);
-        glfwPollEvents();
-    }
+  //      glfwSwapBuffers(g_app.m_Window);glfwPollEvents();
+    //}
+	
 }
+
+
+
+
+sapp_desc sokol_main(int argc, char* argv[]) {
+    (void)argc; (void)argv;
+    sapp_desc desc = { };
+    desc.init_cb = init;
+    desc.frame_cb = frame;
+    desc.cleanup_cb = cleanup;
+    //desc.event_cb = input;
+    desc.gl_force_gles2 = true;
+    desc.window_title = "Dear ImGui (sokol-app)";
+    desc.ios_keyboard_resizes_canvas = false;
+    desc.icon.sokol_default = true;
+    return desc;
+}
+
+
+

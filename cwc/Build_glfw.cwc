@@ -1,0 +1,84 @@
+-{vFlag}=""
+>
+-{sOut}={_sPlatform}_{_sConfig_Type}_{_sOpt}
+>
+-{p3p}=../third-party/
+-{pRive}=../rive-cpp_low_level_rendering/
+-{pRiveSokol}=../src_glfw/
+-{pTess}={p3p}libtess2/
+-{pGLFW}=../GLFW/
+-{pGLFWsrc}=../GLFW/src/
+>
+-{vIncl}=
+-I ../include/ 
+-I {p3p}
+-I {p3p}imgui/
+-I {p3p}sokol/
+-I {pRive}include/
+-I {pRiveSokol}
+-I {pGLFW}include/
+-I {pTess}Include/
+>
+-{vInclEx}=
+-I {p3p}imgui/
+-I {p3p}sokol/util/
+-I {p3p}nanosvg/src/
+;-I {p3p}Freetype/
+>
+;Build Engine
+-c {pRive}/src/  -o obj/{sOut}/lib/rive/ -std=c++2a
+-{vIncl}
+-{vOS_Flag}
+-D_USE_MATH_DEFINES
+-DLOW_LEVEL_RENDERING
+-DCONTOUR_RECURSIVE
+>
+;Generate Dynamic Lib
+;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.{_sDynamic}
+>
+;Generate Static Lib
+;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.a
+>
+;Build stb
+-c {p3p}stb/ -o obj/{sOut}/stb/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build imgui
+-c &{p3p}imgui/ -o obj/{sOut}/imgui/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build libtess2
+-c {p3p}libtess2/Source/ -o obj/{sOut}/libtess2/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build sokol
+-c {p3p}sokol/ -o obj/{sOut}/sokol/
+-{vIncl} -{vOS_Flag} -{vInclEx}
+>
+;Build GLFW
+-c {pGLFWsrc}/init.c			-o   obj/{sOut}/GLFW/init.o				-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_thread.c 	-o   obj/{sOut}/GLFW/win32_thread.o		-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_init.c 		-o   obj/{sOut}/GLFW/win32_init.o		-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_time.c 		-o   obj/{sOut}/GLFW/win32_time.o 		-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_window.c 	-o   obj/{sOut}/GLFW/win32_window.o 	-D_GLFW_WIN32 |
+-c {pGLFWsrc}/wgl_context.c 	-o   obj/{sOut}/GLFW/wgl_context.o 		-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_joystick.c 	-o   obj/{sOut}/GLFW/win32_joystick.o 	-D_GLFW_WIN32 |
+-c {pGLFWsrc}/window.c 			-o   obj/{sOut}/GLFW/window.o 			-D_GLFW_WIN32 |
+-c {pGLFWsrc}/input.c 			-o   obj/{sOut}/GLFW/input.o 			-D_GLFW_WIN32 |
+-c {pGLFWsrc}/win32_monitor.c 	-o   obj/{sOut}/GLFW/win32_monitor.o 	-D_GLFW_WIN32 |
+-c {pGLFWsrc}/monitor.c			-o   obj/{sOut}/GLFW/monitor.o 			-D_GLFW_WIN32 |
+-c {pGLFWsrc}/vulkan.c 			-o   obj/{sOut}/GLFW/vulkan.o			-D_GLFW_WIN32 |
+-c {pGLFWsrc}/context.c 		-o   obj/{sOut}/GLFW/context.o 			-D_GLFW_WIN32 |
+-c {pGLFWsrc}/egl_context.c 	-o   obj/{sOut}/GLFW/egl_context.o		-D_GLFW_WIN32 |
+-c {pGLFWsrc}/osmesa_context.c	-o   obj/{sOut}/GLFW/osmesa_context.o 	-D_GLFW_WIN32 |
+>
+;Build an Example
+-c {pRiveSokol} -o obj/{sOut}/
+-{vIncl}
+-{vOS_Flag}
+>
+;Generate executable
+-o obj/{sOut}/ -#To _out/{sOut}/App.*
+{vOS_FlagLink}
+>
+-#Run

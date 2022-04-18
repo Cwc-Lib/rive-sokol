@@ -4,10 +4,11 @@
 >
 -{p3p}=../third-party/
 -{pRive}=../rive-cpp_low_level_rendering/
--{pRiveSokol}=../src_glfw/
+;-{pRiveSokol}=../src_glfw/
+-{pRiveSokol}=../src_sapp/
 -{pTess}={p3p}libtess2/
--{pGLFW}=../GLFW/
--{pGLFWsrc}=../GLFW/src/
+;-{pGLFW}=../GLFW/
+;-{pGLFWsrc}=../GLFW/src/
 >
 -{vIncl}=
 -I ../include/ 
@@ -16,7 +17,7 @@
 -I {p3p}sokol/
 -I {pRive}include/
 -I {pRiveSokol}
--I {pGLFW}include/
+;-I {pGLFW}include/
 -I {pTess}Include/
 >
 -{vInclEx}=
@@ -53,24 +54,7 @@
 >
 ;Build sokol
 -c {p3p}sokol/ -o obj/{sOut}/sokol/
--{vIncl} -{vOS_Flag} -{vInclEx}
->
-;Build GLFW
--c {pGLFWsrc}/init.c			-o   obj/{sOut}/GLFW/init.o				-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_thread.c 	-o   obj/{sOut}/GLFW/win32_thread.o		-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_init.c 		-o   obj/{sOut}/GLFW/win32_init.o		-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_time.c 		-o   obj/{sOut}/GLFW/win32_time.o 		-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_window.c 	-o   obj/{sOut}/GLFW/win32_window.o 	-D_GLFW_WIN32 |
--c {pGLFWsrc}/wgl_context.c 	-o   obj/{sOut}/GLFW/wgl_context.o 		-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_joystick.c 	-o   obj/{sOut}/GLFW/win32_joystick.o 	-D_GLFW_WIN32 |
--c {pGLFWsrc}/window.c 			-o   obj/{sOut}/GLFW/window.o 			-D_GLFW_WIN32 |
--c {pGLFWsrc}/input.c 			-o   obj/{sOut}/GLFW/input.o 			-D_GLFW_WIN32 |
--c {pGLFWsrc}/win32_monitor.c 	-o   obj/{sOut}/GLFW/win32_monitor.o 	-D_GLFW_WIN32 |
--c {pGLFWsrc}/monitor.c			-o   obj/{sOut}/GLFW/monitor.o 			-D_GLFW_WIN32 |
--c {pGLFWsrc}/vulkan.c 			-o   obj/{sOut}/GLFW/vulkan.o			-D_GLFW_WIN32 |
--c {pGLFWsrc}/context.c 		-o   obj/{sOut}/GLFW/context.o 			-D_GLFW_WIN32 |
--c {pGLFWsrc}/egl_context.c 	-o   obj/{sOut}/GLFW/egl_context.o		-D_GLFW_WIN32 |
--c {pGLFWsrc}/osmesa_context.c	-o   obj/{sOut}/GLFW/osmesa_context.o 	-D_GLFW_WIN32 |
+-{vIncl} -{vOS_Flag} -{vInclEx} -DSOKOL_GLCORE33
 >
 ;Build an Example
 -c {pRiveSokol} -o obj/{sOut}/

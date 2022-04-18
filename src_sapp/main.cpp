@@ -1,7 +1,7 @@
 extern bool AppBootstrap(int argc, char const *argv[]);
 extern void AppRun();
 extern void AppShutdown();
-
+/*
 int main(int argc, char const *argv[])
 {
     if (AppBootstrap(argc, argv))
@@ -11,3 +11,8 @@ int main(int argc, char const *argv[])
     }
     return 0;
 }
+*/
+
+
+//static void frame(void);
+
