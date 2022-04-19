@@ -1,22 +1,14 @@
 #include <stdio.h>
 
 #define SOKOL_IMPL
-//#define SOKOL_GLCORE33
 #define SOKOL_IMGUI_IMPL
 
 #include "sokol_app.h"
 #include "sokol_gfx.h"
 #include "sokol_glue.h"
 #include "imgui.h"
-
 #include "sokol_time.h"
 
-
-//#include <sokol_gfx.h>
-//#include <sokol_time.h>
-
-//#define GLFW_INCLUDE_NONE
-//#include <GLFW/glfw3.h>
 
 #include <jc/array.h>
 #include <jc/hashtable.h>
@@ -424,337 +416,6 @@ static void AppDropCallback(GLFWwindow* window, int count, const char** paths)
         AddArtboardFromPath(paths[i]);
     }
 }*/
-
-void add_assets(void);
-void init(void) {
-    // setup sokol-gfx, sokol-time and sokol-imgui
-    sg_desc desc = { };
-    desc.context = sapp_sgcontext();
-	desc.buffer_pool_size = 4096;
-    sg_setup(&desc);
-/*
-    // use sokol-imgui with all default-options (we're not doing
-    // multi-sampled rendering or using non-default pixel formats)
-    simgui_desc_t simgui_desc = { };
-    simgui_setup(&simgui_desc);
-
-    // initial clear color
-    pass_action.colors[0].action = SG_ACTION_CLEAR;
-    pass_action.colors[0].value = { 0.0f, 0.5f, 0.7f, 1.0f };*/
-
-
-/*
-    ////////////////////////////////////////////////////
-    // GLFW setup
-    ////////////////////////////////////////////////////
-    if (!glfwInit())
-    {
-        fprintf(stderr, "Failed to initialize glfw.\n");
-        return false;
-    }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(1280, 720, VIEWER_WINDOW_NAME, 0, 0);
-
-    if (!window)
-    {
-        fprintf(stderr, "Failed to initialize glfw.\n");
-        return false;
-    }
-
-
-    glfwSetCursorPosCallback(window, AppCursorCallback);
-    glfwSetMouseButtonCallback(window, AppMouseButtonCallback);
-    glfwSetScrollCallback(window, AppMouseWheelCallback);
-    glfwSetDropCallback(window, AppDropCallback);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-	*/
-	
-
-    memset((void*)&g_app, 0, sizeof(g_app));
-	
-	
-   // g_app.m_Window = window;
-    g_app.m_Camera.Reset();
-
-    ////////////////////////////////////////////////////
-    // Sokol setup
-    ////////////////////////////////////////////////////
-	
-    stm_setup();
-	/*
-    sg_desc sg_setup_desc = {
-        .buffer_pool_size = 4096
-    };
-    sg_setup(&sg_setup_desc);
-*/
-    // Main tessellation pipeline
-    sg_pipeline_desc tessellationPipeline               = {};
-    tessellationPipeline.shader                         = sg_make_shader(rive_shader_shader_desc(sg_query_backend()));
-    tessellationPipeline.index_type                     = SG_INDEXTYPE_UINT32;
-    tessellationPipeline.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
-    tessellationPipeline.colors[0].blend.enabled        = true;
-    tessellationPipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-    tessellationPipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-
-    sg_pipeline_desc tessellationApplyingClippingPipeline     = {};
-    tessellationApplyingClippingPipeline.shader               = tessellationPipeline.shader;
-    tessellationApplyingClippingPipeline.index_type           = SG_INDEXTYPE_UINT32;
-    tessellationApplyingClippingPipeline.layout.attrs[0]      = { .format = SG_VERTEXFORMAT_FLOAT2 };
-    tessellationApplyingClippingPipeline.colors[0].write_mask = SG_COLORMASK_NONE;
-
-    tessellationApplyingClippingPipeline.stencil = {
-        .enabled = true,
-        .front = {
-            .compare       = SG_COMPAREFUNC_ALWAYS,
-            .fail_op       = SG_STENCILOP_KEEP,
-            .depth_fail_op = SG_STENCILOP_KEEP,
-            .pass_op       = SG_STENCILOP_INCR_CLAMP,
-        },
-        .back = {
-            .compare       = SG_COMPAREFUNC_ALWAYS,
-            .fail_op       = SG_STENCILOP_KEEP,
-            .depth_fail_op = SG_STENCILOP_KEEP,
-            .pass_op       = SG_STENCILOP_INCR_CLAMP,
-        },
-        .read_mask  = 0xFF,
-        .write_mask = 0xFF,
-        .ref        = 0x0,
-    };
-
-    // Stencil to cover pipelines
-    sg_pipeline_desc pipelineStencilDesc               = {};
-    pipelineStencilDesc.shader                         = tessellationPipeline.shader;
-    pipelineStencilDesc.index_type                     = SG_INDEXTYPE_UINT32;
-    pipelineStencilDesc.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
-    pipelineStencilDesc.colors[0].blend.enabled        = true;
-    pipelineStencilDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-    pipelineStencilDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-
-    pipelineStencilDesc.stencil = {
-        .enabled = true,
-        .front = {
-            .compare       = SG_COMPAREFUNC_ALWAYS,
-            .fail_op       = SG_STENCILOP_KEEP,
-            .depth_fail_op = SG_STENCILOP_KEEP,
-            .pass_op       = SG_STENCILOP_INCR_WRAP,
-        },
-        .back = {
-            .compare       = SG_COMPAREFUNC_ALWAYS,
-            .fail_op       = SG_STENCILOP_KEEP,
-            .depth_fail_op = SG_STENCILOP_KEEP,
-            .pass_op       = SG_STENCILOP_DECR_WRAP,
-        },
-        .read_mask  = 0xFF,
-        .write_mask = 0xFF,
-        .ref        = 0x0,
-    };
-    pipelineStencilDesc.face_winding         = SG_FACEWINDING_CCW;
-    pipelineStencilDesc.colors[0].write_mask = SG_COLORMASK_NONE;
-
-    sg_pipeline stencilPipelineNonClippingCCW = sg_make_pipeline(&pipelineStencilDesc);
-
-    pipelineStencilDesc.face_winding = SG_FACEWINDING_CW;
-
-    sg_pipeline stencilPipelineNonClippingCW = sg_make_pipeline(&pipelineStencilDesc);
-
-    pipelineStencilDesc.stencil.front.compare = SG_COMPAREFUNC_EQUAL;
-    pipelineStencilDesc.stencil.back.compare  = SG_COMPAREFUNC_EQUAL;
-    pipelineStencilDesc.stencil.write_mask    = 0x7F;
-    pipelineStencilDesc.stencil.read_mask     = 0x80;
-    pipelineStencilDesc.stencil.ref           = 0x80;
-    pipelineStencilDesc.face_winding          = SG_FACEWINDING_CCW;
-
-    sg_pipeline stencilPipelineClippingCCW = sg_make_pipeline(&pipelineStencilDesc);
-
-    pipelineStencilDesc.face_winding = SG_FACEWINDING_CW;
-
-    sg_pipeline stencilPipelineClippingCW = sg_make_pipeline(&pipelineStencilDesc);
-
-    pipelineStencilDesc.stencil.front.compare       = SG_COMPAREFUNC_NOT_EQUAL;
-    pipelineStencilDesc.stencil.front.fail_op       = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.front.depth_fail_op = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.front.pass_op       = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.back.compare        = SG_COMPAREFUNC_NOT_EQUAL;
-    pipelineStencilDesc.stencil.back.fail_op        = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.back.depth_fail_op  = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.back.pass_op        = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.ref                 = 0x0;
-    pipelineStencilDesc.stencil.write_mask          = 0xFF;
-    pipelineStencilDesc.stencil.read_mask           = 0xFF;
-    pipelineStencilDesc.colors[0].write_mask        = SG_COLORMASK_RGBA;
-
-    sg_pipeline coverPipelineNonClipping = sg_make_pipeline(&pipelineStencilDesc);
-    pipelineStencilDesc.stencil.read_mask           = 0x7F;
-    pipelineStencilDesc.stencil.write_mask          = 0x7F;
-    sg_pipeline coverPipelineClipping = sg_make_pipeline(&pipelineStencilDesc);
-
-    pipelineStencilDesc.stencil.front.compare       = SG_COMPAREFUNC_NOT_EQUAL;
-    pipelineStencilDesc.stencil.front.fail_op       = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.front.depth_fail_op = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.front.pass_op       = SG_STENCILOP_REPLACE;
-    pipelineStencilDesc.stencil.back.compare        = SG_COMPAREFUNC_NOT_EQUAL;
-    pipelineStencilDesc.stencil.back.fail_op        = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.back.depth_fail_op  = SG_STENCILOP_ZERO;
-    pipelineStencilDesc.stencil.back.pass_op        = SG_STENCILOP_REPLACE;
-    pipelineStencilDesc.stencil.ref                 = 0x80;
-    pipelineStencilDesc.stencil.write_mask          = 0xFF;
-    pipelineStencilDesc.stencil.read_mask           = 0x7F;
-    pipelineStencilDesc.colors[0].write_mask        = SG_COLORMASK_NONE;
-    sg_pipeline coverPipelineIsApplyingClipping     = sg_make_pipeline(&pipelineStencilDesc);
-
-    g_app.m_StencilPipelineNonClippingCCW          = stencilPipelineNonClippingCCW;
-    g_app.m_StencilPipelineNonClippingCW           = stencilPipelineNonClippingCW;
-    g_app.m_StencilPipelineClippingCCW             = stencilPipelineClippingCCW;
-    g_app.m_StencilPipelineClippingCW              = stencilPipelineClippingCW;
-    g_app.m_StencilPipelineCoverNonClipping        = coverPipelineNonClipping;
-    g_app.m_StencilPipelineCoverClipping           = coverPipelineClipping;
-    g_app.m_StencilPipelineCoverIsApplyingCLipping = coverPipelineIsApplyingClipping;
-
-    // Stroke pipeline
-    sg_pipeline_desc strokePipeline               = {};
-    strokePipeline.shader                         = tessellationPipeline.shader;
-    strokePipeline.primitive_type                 = SG_PRIMITIVETYPE_TRIANGLE_STRIP;
-    strokePipeline.index_type                     = SG_INDEXTYPE_NONE;
-    strokePipeline.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
-    strokePipeline.colors[0].blend.enabled        = true;
-    strokePipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-    strokePipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-
-    // Debug pipelines
-    sg_pipeline_desc debugViewContourPipelineDesc               = {};
-    debugViewContourPipelineDesc.shader                         = sg_make_shader(rive_debug_contour_shader_desc(sg_query_backend()));
-    debugViewContourPipelineDesc.index_type                     = SG_INDEXTYPE_UINT32;
-    debugViewContourPipelineDesc.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
-    debugViewContourPipelineDesc.colors[0].blend.enabled        = true;
-    debugViewContourPipelineDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-    debugViewContourPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-    debugViewContourPipelineDesc.primitive_type                 = SG_PRIMITIVETYPE_POINTS;
-
-    sg_pass_action passAction   = {0};
-    passAction.colors[0].action = SG_ACTION_CLEAR;
-    passAction.colors[0].value  = { 0.25f, 0.25f, 0.25f, 1.0f};
-
-    g_app.m_MainShader                        = tessellationPipeline.shader;
-    g_app.m_StrokePipeline                    = sg_make_pipeline(&strokePipeline);
-    g_app.m_TessellationPipeline              = sg_make_pipeline(&tessellationPipeline);
-    g_app.m_TessellationApplyClippingPipeline = sg_make_pipeline(&tessellationApplyingClippingPipeline);
-    g_app.m_DebugViewContourPipeline          = sg_make_pipeline(&debugViewContourPipelineDesc);
-    g_app.m_PassAction                        = passAction;
-    g_app.m_Bindings                          = {};
-
-    ////////////////////////////////////////////////////
-    // Rive setup
-    ////////////////////////////////////////////////////
-    g_app.m_Ctx = rive::createContext();
-    rive::setBufferCallbacks(g_app.m_Ctx, AppRequestBufferCallback, AppDestroyBufferCallback);
-    rive::setRenderMode(g_app.m_Ctx, rive::MODE_STENCIL_TO_COVER);
-    g_app.m_Renderer = rive::createRenderer(g_app.m_Ctx);
-    rive::setClippingSupport(g_app.m_Renderer, true);
-/*
-    for (int i = 1; i < argc; ++i)
-    {
-        AddArtboardFromPath(argv[i]);
-    }*/
-
-
-	add_assets();
-
-
-    ////////////////////////////////////////////////////
-    // Imgui setup
-    ////////////////////////////////////////////////////
-    ImGui::CreateContext();
-    ImGui::StyleColorsDark();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontDefault();
-
-    // dynamic vertex- and index-buffers for imgui-generated geometry
-    sg_buffer_desc imguiVxBufferDesc = {};
-    imguiVxBufferDesc.usage          = SG_USAGE_STREAM;
-    imguiVxBufferDesc.size           = App::MAX_IMGUI_VERTICES * sizeof(ImDrawVert);
-    sg_buffer_desc imguiIxBufferDesc = {};
-    imguiIxBufferDesc.type           = SG_BUFFERTYPE_INDEXBUFFER;
-    imguiIxBufferDesc.usage          = SG_USAGE_STREAM;
-    imguiIxBufferDesc.size           = App::MAX_IMGUI_INDICES * sizeof(ImDrawIdx);
-
-    unsigned char* fontPixels;
-    int fontWidth, fontHeight;
-    io.Fonts->GetTexDataAsRGBA32(&fontPixels, &fontWidth, &fontHeight);
-    sg_image_desc imguiFontImageDesc       = {};
-    imguiFontImageDesc.width               = fontWidth;
-    imguiFontImageDesc.height              = fontHeight;
-    imguiFontImageDesc.pixel_format        = SG_PIXELFORMAT_RGBA8;
-    imguiFontImageDesc.wrap_u              = SG_WRAP_CLAMP_TO_EDGE;
-    imguiFontImageDesc.wrap_v              = SG_WRAP_CLAMP_TO_EDGE;
-    imguiFontImageDesc.data.subimage[0][0] = sg_range{fontPixels, size_t(fontWidth * fontHeight * 4)};
-
-    sg_shader_desc imguiShaderDesc   = {};
-    sg_shader_uniform_block_desc& ub = imguiShaderDesc.vs.uniform_blocks[0];
-    ub.size                          = sizeof(vs_imgui_params_t);
-    ub.uniforms[0].name              = "disp_size";
-    ub.uniforms[0].type              = SG_UNIFORMTYPE_FLOAT2;
-    imguiShaderDesc.vs.source =
-	
-#ifdef SOKOL_GLCORE33
- "#version 330\n" 
-#else
-"#version 300 es\n" 
-#endif
-
-        "uniform vec2 disp_size;\n"
-        "layout(location=0) in vec2 position;\n"
-        "layout(location=1) in vec2 texcoord0;\n"
-        "layout(location=2) in vec4 color0;\n"
-        "out vec2 uv;\n"
-        "out vec4 color;\n"
-        "void main() {\n"
-        "    gl_Position = vec4(((position/disp_size)-0.5)*vec2(2.0,-2.0), 0.5, 1.0);\n"
-        "    uv = texcoord0;\n"
-        "    color = color0;\n"
-        "}\n";
-    imguiShaderDesc.fs.images[0].name       = "tex";
-    imguiShaderDesc.fs.images[0].image_type = SG_IMAGETYPE_2D;
-    imguiShaderDesc.fs.source =
-	
-#ifdef SOKOL_GLCORE33
- "#version 330\n" 
-#else
-"#version 300 es\n" 
-#endif
-		"precision mediump float;"
-        "uniform sampler2D tex;\n"
-        "in vec2 uv;\n"
-        "in vec4 color;\n"
-        "out vec4 frag_color;\n"
-        "void main() {\n"
-        "    frag_color = texture(tex, uv) * color;\n"
-        "}\n";
-
-    g_app.m_ImguiVxBuffer  = sg_make_buffer(&imguiVxBufferDesc);
-    g_app.m_ImguiIxBuffer  = sg_make_buffer(&imguiIxBufferDesc);
-    g_app.m_ImguiFontImage = sg_make_image(&imguiFontImageDesc);
-    g_app.m_ImguiShader    = sg_make_shader(&imguiShaderDesc);
-
-    sg_pipeline_desc imguiPipelineDesc               = {};
-    imguiPipelineDesc.layout.buffers[0].stride       = sizeof(ImDrawVert);
-    imguiPipelineDesc.layout.attrs[0].format         = SG_VERTEXFORMAT_FLOAT2;
-    imguiPipelineDesc.layout.attrs[1].format         = SG_VERTEXFORMAT_FLOAT2;
-    imguiPipelineDesc.layout.attrs[2].format         = SG_VERTEXFORMAT_UBYTE4N;
-    imguiPipelineDesc.shader                         = g_app.m_ImguiShader;
-    imguiPipelineDesc.index_type                     = SG_INDEXTYPE_UINT16;
-    imguiPipelineDesc.colors[0].blend.enabled        = true;
-    imguiPipelineDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
-    imguiPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
-    imguiPipelineDesc.colors[0].write_mask           = SG_COLORMASK_RGB;
-    g_app.m_ImguiPipeline                            = sg_make_pipeline(&imguiPipelineDesc);
-  
-}
 
 void AppUpdateRive(float dt, uint32_t width, uint32_t height)
 {
@@ -1475,6 +1136,340 @@ void cleanup()
     sg_shutdown();
 }
 
+
+void add_assets(void);
+void init(void) {
+    // setup sokol-gfx, sokol-time and sokol-imgui
+    sg_desc desc = { };
+    desc.context = sapp_sgcontext();
+	desc.buffer_pool_size = 4096;
+    sg_setup(&desc);
+/*
+    // use sokol-imgui with all default-options (we're not doing
+    // multi-sampled rendering or using non-default pixel formats)
+    simgui_desc_t simgui_desc = { };
+    simgui_setup(&simgui_desc);
+
+    // initial clear color
+    pass_action.colors[0].action = SG_ACTION_CLEAR;
+    pass_action.colors[0].value = { 0.0f, 0.5f, 0.7f, 1.0f };*/
+
+
+/*
+    ////////////////////////////////////////////////////
+    // GLFW setup
+    ////////////////////////////////////////////////////
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize glfw.\n");
+        return false;
+    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, VIEWER_WINDOW_NAME, 0, 0);
+
+    if (!window)
+    {
+        fprintf(stderr, "Failed to initialize glfw.\n");
+        return false;
+    }
+
+
+    glfwSetCursorPosCallback(window, AppCursorCallback);
+    glfwSetMouseButtonCallback(window, AppMouseButtonCallback);
+    glfwSetScrollCallback(window, AppMouseWheelCallback);
+    glfwSetDropCallback(window, AppDropCallback);
+
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+	*/
+	
+
+    memset((void*)&g_app, 0, sizeof(g_app));
+	
+	
+   // g_app.m_Window = window;
+    g_app.m_Camera.Reset();
+
+    ////////////////////////////////////////////////////
+    // Sokol setup
+    ////////////////////////////////////////////////////
+	
+    stm_setup();
+	/*
+    sg_desc sg_setup_desc = {
+        .buffer_pool_size = 4096
+    };
+    sg_setup(&sg_setup_desc);
+*/
+    // Main tessellation pipeline
+    sg_pipeline_desc tessellationPipeline               = {};
+    tessellationPipeline.shader                         = sg_make_shader(rive_shader_shader_desc(sg_query_backend()));
+    tessellationPipeline.index_type                     = SG_INDEXTYPE_UINT32;
+    tessellationPipeline.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
+    tessellationPipeline.colors[0].blend.enabled        = true;
+    tessellationPipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+    tessellationPipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+
+    sg_pipeline_desc tessellationApplyingClippingPipeline     = {};
+    tessellationApplyingClippingPipeline.shader               = tessellationPipeline.shader;
+    tessellationApplyingClippingPipeline.index_type           = SG_INDEXTYPE_UINT32;
+    tessellationApplyingClippingPipeline.layout.attrs[0]      = { .format = SG_VERTEXFORMAT_FLOAT2 };
+    tessellationApplyingClippingPipeline.colors[0].write_mask = SG_COLORMASK_NONE;
+
+    tessellationApplyingClippingPipeline.stencil = {
+        .enabled = true,
+        .front = {
+            .compare       = SG_COMPAREFUNC_ALWAYS,
+            .fail_op       = SG_STENCILOP_KEEP,
+            .depth_fail_op = SG_STENCILOP_KEEP,
+            .pass_op       = SG_STENCILOP_INCR_CLAMP,
+        },
+        .back = {
+            .compare       = SG_COMPAREFUNC_ALWAYS,
+            .fail_op       = SG_STENCILOP_KEEP,
+            .depth_fail_op = SG_STENCILOP_KEEP,
+            .pass_op       = SG_STENCILOP_INCR_CLAMP,
+        },
+        .read_mask  = 0xFF,
+        .write_mask = 0xFF,
+        .ref        = 0x0,
+    };
+
+    // Stencil to cover pipelines
+    sg_pipeline_desc pipelineStencilDesc               = {};
+    pipelineStencilDesc.shader                         = tessellationPipeline.shader;
+    pipelineStencilDesc.index_type                     = SG_INDEXTYPE_UINT32;
+    pipelineStencilDesc.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
+    pipelineStencilDesc.colors[0].blend.enabled        = true;
+    pipelineStencilDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+    pipelineStencilDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+
+    pipelineStencilDesc.stencil = {
+        .enabled = true,
+        .front = {
+            .compare       = SG_COMPAREFUNC_ALWAYS,
+            .fail_op       = SG_STENCILOP_KEEP,
+            .depth_fail_op = SG_STENCILOP_KEEP,
+            .pass_op       = SG_STENCILOP_INCR_WRAP,
+        },
+        .back = {
+            .compare       = SG_COMPAREFUNC_ALWAYS,
+            .fail_op       = SG_STENCILOP_KEEP,
+            .depth_fail_op = SG_STENCILOP_KEEP,
+            .pass_op       = SG_STENCILOP_DECR_WRAP,
+        },
+        .read_mask  = 0xFF,
+        .write_mask = 0xFF,
+        .ref        = 0x0,
+    };
+    pipelineStencilDesc.face_winding         = SG_FACEWINDING_CCW;
+    pipelineStencilDesc.colors[0].write_mask = SG_COLORMASK_NONE;
+
+    sg_pipeline stencilPipelineNonClippingCCW = sg_make_pipeline(&pipelineStencilDesc);
+
+    pipelineStencilDesc.face_winding = SG_FACEWINDING_CW;
+
+    sg_pipeline stencilPipelineNonClippingCW = sg_make_pipeline(&pipelineStencilDesc);
+
+    pipelineStencilDesc.stencil.front.compare = SG_COMPAREFUNC_EQUAL;
+    pipelineStencilDesc.stencil.back.compare  = SG_COMPAREFUNC_EQUAL;
+    pipelineStencilDesc.stencil.write_mask    = 0x7F;
+    pipelineStencilDesc.stencil.read_mask     = 0x80;
+    pipelineStencilDesc.stencil.ref           = 0x80;
+    pipelineStencilDesc.face_winding          = SG_FACEWINDING_CCW;
+
+    sg_pipeline stencilPipelineClippingCCW = sg_make_pipeline(&pipelineStencilDesc);
+
+    pipelineStencilDesc.face_winding = SG_FACEWINDING_CW;
+
+    sg_pipeline stencilPipelineClippingCW = sg_make_pipeline(&pipelineStencilDesc);
+
+    pipelineStencilDesc.stencil.front.compare       = SG_COMPAREFUNC_NOT_EQUAL;
+    pipelineStencilDesc.stencil.front.fail_op       = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.front.depth_fail_op = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.front.pass_op       = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.back.compare        = SG_COMPAREFUNC_NOT_EQUAL;
+    pipelineStencilDesc.stencil.back.fail_op        = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.back.depth_fail_op  = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.back.pass_op        = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.ref                 = 0x0;
+    pipelineStencilDesc.stencil.write_mask          = 0xFF;
+    pipelineStencilDesc.stencil.read_mask           = 0xFF;
+    pipelineStencilDesc.colors[0].write_mask        = SG_COLORMASK_RGBA;
+
+    sg_pipeline coverPipelineNonClipping = sg_make_pipeline(&pipelineStencilDesc);
+    pipelineStencilDesc.stencil.read_mask           = 0x7F;
+    pipelineStencilDesc.stencil.write_mask          = 0x7F;
+    sg_pipeline coverPipelineClipping = sg_make_pipeline(&pipelineStencilDesc);
+
+    pipelineStencilDesc.stencil.front.compare       = SG_COMPAREFUNC_NOT_EQUAL;
+    pipelineStencilDesc.stencil.front.fail_op       = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.front.depth_fail_op = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.front.pass_op       = SG_STENCILOP_REPLACE;
+    pipelineStencilDesc.stencil.back.compare        = SG_COMPAREFUNC_NOT_EQUAL;
+    pipelineStencilDesc.stencil.back.fail_op        = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.back.depth_fail_op  = SG_STENCILOP_ZERO;
+    pipelineStencilDesc.stencil.back.pass_op        = SG_STENCILOP_REPLACE;
+    pipelineStencilDesc.stencil.ref                 = 0x80;
+    pipelineStencilDesc.stencil.write_mask          = 0xFF;
+    pipelineStencilDesc.stencil.read_mask           = 0x7F;
+    pipelineStencilDesc.colors[0].write_mask        = SG_COLORMASK_NONE;
+    sg_pipeline coverPipelineIsApplyingClipping     = sg_make_pipeline(&pipelineStencilDesc);
+
+    g_app.m_StencilPipelineNonClippingCCW          = stencilPipelineNonClippingCCW;
+    g_app.m_StencilPipelineNonClippingCW           = stencilPipelineNonClippingCW;
+    g_app.m_StencilPipelineClippingCCW             = stencilPipelineClippingCCW;
+    g_app.m_StencilPipelineClippingCW              = stencilPipelineClippingCW;
+    g_app.m_StencilPipelineCoverNonClipping        = coverPipelineNonClipping;
+    g_app.m_StencilPipelineCoverClipping           = coverPipelineClipping;
+    g_app.m_StencilPipelineCoverIsApplyingCLipping = coverPipelineIsApplyingClipping;
+
+    // Stroke pipeline
+    sg_pipeline_desc strokePipeline               = {};
+    strokePipeline.shader                         = tessellationPipeline.shader;
+    strokePipeline.primitive_type                 = SG_PRIMITIVETYPE_TRIANGLE_STRIP;
+    strokePipeline.index_type                     = SG_INDEXTYPE_NONE;
+    strokePipeline.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
+    strokePipeline.colors[0].blend.enabled        = true;
+    strokePipeline.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+    strokePipeline.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+
+    // Debug pipelines
+    sg_pipeline_desc debugViewContourPipelineDesc               = {};
+    debugViewContourPipelineDesc.shader                         = sg_make_shader(rive_debug_contour_shader_desc(sg_query_backend()));
+    debugViewContourPipelineDesc.index_type                     = SG_INDEXTYPE_UINT32;
+    debugViewContourPipelineDesc.layout.attrs[0]                = { .format = SG_VERTEXFORMAT_FLOAT2 };
+    debugViewContourPipelineDesc.colors[0].blend.enabled        = true;
+    debugViewContourPipelineDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+    debugViewContourPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+    debugViewContourPipelineDesc.primitive_type                 = SG_PRIMITIVETYPE_POINTS;
+
+    sg_pass_action passAction   = {0};
+    passAction.colors[0].action = SG_ACTION_CLEAR;
+    passAction.colors[0].value  = { 0.25f, 0.25f, 0.25f, 1.0f};
+
+    g_app.m_MainShader                        = tessellationPipeline.shader;
+    g_app.m_StrokePipeline                    = sg_make_pipeline(&strokePipeline);
+    g_app.m_TessellationPipeline              = sg_make_pipeline(&tessellationPipeline);
+    g_app.m_TessellationApplyClippingPipeline = sg_make_pipeline(&tessellationApplyingClippingPipeline);
+    g_app.m_DebugViewContourPipeline          = sg_make_pipeline(&debugViewContourPipelineDesc);
+    g_app.m_PassAction                        = passAction;
+    g_app.m_Bindings                          = {};
+
+    ////////////////////////////////////////////////////
+    // Rive setup
+    ////////////////////////////////////////////////////
+    g_app.m_Ctx = rive::createContext();
+    rive::setBufferCallbacks(g_app.m_Ctx, AppRequestBufferCallback, AppDestroyBufferCallback);
+    rive::setRenderMode(g_app.m_Ctx, rive::MODE_STENCIL_TO_COVER);
+    g_app.m_Renderer = rive::createRenderer(g_app.m_Ctx);
+    rive::setClippingSupport(g_app.m_Renderer, true);
+/*
+    for (int i = 1; i < argc; ++i)
+    {
+        AddArtboardFromPath(argv[i]);
+    }*/
+
+
+	add_assets();
+
+
+    ////////////////////////////////////////////////////
+    // Imgui setup
+    ////////////////////////////////////////////////////
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.Fonts->AddFontDefault();
+
+    // dynamic vertex- and index-buffers for imgui-generated geometry
+    sg_buffer_desc imguiVxBufferDesc = {};
+    imguiVxBufferDesc.usage          = SG_USAGE_STREAM;
+    imguiVxBufferDesc.size           = App::MAX_IMGUI_VERTICES * sizeof(ImDrawVert);
+    sg_buffer_desc imguiIxBufferDesc = {};
+    imguiIxBufferDesc.type           = SG_BUFFERTYPE_INDEXBUFFER;
+    imguiIxBufferDesc.usage          = SG_USAGE_STREAM;
+    imguiIxBufferDesc.size           = App::MAX_IMGUI_INDICES * sizeof(ImDrawIdx);
+
+    unsigned char* fontPixels;
+    int fontWidth, fontHeight;
+    io.Fonts->GetTexDataAsRGBA32(&fontPixels, &fontWidth, &fontHeight);
+    sg_image_desc imguiFontImageDesc       = {};
+    imguiFontImageDesc.width               = fontWidth;
+    imguiFontImageDesc.height              = fontHeight;
+    imguiFontImageDesc.pixel_format        = SG_PIXELFORMAT_RGBA8;
+    imguiFontImageDesc.wrap_u              = SG_WRAP_CLAMP_TO_EDGE;
+    imguiFontImageDesc.wrap_v              = SG_WRAP_CLAMP_TO_EDGE;
+    imguiFontImageDesc.data.subimage[0][0] = sg_range{fontPixels, size_t(fontWidth * fontHeight * 4)};
+
+    sg_shader_desc imguiShaderDesc   = {};
+    sg_shader_uniform_block_desc& ub = imguiShaderDesc.vs.uniform_blocks[0];
+    ub.size                          = sizeof(vs_imgui_params_t);
+    ub.uniforms[0].name              = "disp_size";
+    ub.uniforms[0].type              = SG_UNIFORMTYPE_FLOAT2;
+	
+    imguiShaderDesc.vs.source =
+	
+#ifdef SOKOL_GLCORE33
+ "#version 330\n" 
+#else
+"#version 300 es\n" 
+#endif
+
+        "uniform vec2 disp_size;\n"
+        "layout(location=0) in vec2 position;\n"
+        "layout(location=1) in vec2 texcoord0;\n"
+        "layout(location=2) in vec4 color0;\n"
+        "out vec2 uv;\n"
+        "out vec4 color;\n"
+        "void main() {\n"
+        "    gl_Position = vec4(((position/disp_size)-0.5)*vec2(2.0,-2.0), 0.5, 1.0);\n"
+        "    uv = texcoord0;\n"
+        "    color = color0;\n"
+        "}\n";
+		
+		
+    imguiShaderDesc.fs.images[0].name       = "tex";
+    imguiShaderDesc.fs.images[0].image_type = SG_IMAGETYPE_2D;
+    imguiShaderDesc.fs.source =
+	
+#ifdef SOKOL_GLCORE33
+ "#version 330\n" 
+#else
+"#version 300 es\n" 
+#endif
+		"precision mediump float;"
+        "uniform sampler2D tex;\n"
+        "in vec2 uv;\n"
+        "in vec4 color;\n"
+        "out vec4 frag_color;\n"
+        "void main() {\n"
+        "    frag_color = texture(tex, uv) * color;\n"
+        "}\n";
+
+    g_app.m_ImguiVxBuffer  = sg_make_buffer(&imguiVxBufferDesc);
+    g_app.m_ImguiIxBuffer  = sg_make_buffer(&imguiIxBufferDesc);
+    g_app.m_ImguiFontImage = sg_make_image(&imguiFontImageDesc);
+    g_app.m_ImguiShader    = sg_make_shader(&imguiShaderDesc);
+
+    sg_pipeline_desc imguiPipelineDesc               = {};
+    imguiPipelineDesc.layout.buffers[0].stride       = sizeof(ImDrawVert);
+    imguiPipelineDesc.layout.attrs[0].format         = SG_VERTEXFORMAT_FLOAT2;
+    imguiPipelineDesc.layout.attrs[1].format         = SG_VERTEXFORMAT_FLOAT2;
+    imguiPipelineDesc.layout.attrs[2].format         = SG_VERTEXFORMAT_UBYTE4N;
+    imguiPipelineDesc.shader                         = g_app.m_ImguiShader;
+    imguiPipelineDesc.index_type                     = SG_INDEXTYPE_UINT16;
+    imguiPipelineDesc.colors[0].blend.enabled        = true;
+    imguiPipelineDesc.colors[0].blend.src_factor_rgb = SG_BLENDFACTOR_SRC_ALPHA;
+    imguiPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+    imguiPipelineDesc.colors[0].write_mask           = SG_COLORMASK_RGB;
+    g_app.m_ImguiPipeline                            = sg_make_pipeline(&imguiPipelineDesc);
+  
+}
 
 static void frame(void) {
 

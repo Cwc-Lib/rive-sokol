@@ -60,7 +60,7 @@ void main()
             {
                 break;
             }
-            color = mix(color, colors[i+1], smoothstep( stops[i].x, stops[i+1].x, f ));
+            //color = mix(color, colors[i+1], smoothstep( stops[i].x, stops[i+1].x, f ));
         }
 
         fragColor = vec4(color.xyz * color.w, color.w);
@@ -77,7 +77,7 @@ void main()
             {
                 break;
             }
-            color = mix(color, colors[i+1], smoothstep( stops[i].x, stops[i+1].x, f ));
+            //color = mix(color, colors[i+1], smoothstep( stops[i].x, stops[i+1].x, f ));
         }
 
         fragColor = vec4(color.xyz * color.w, color.w);
