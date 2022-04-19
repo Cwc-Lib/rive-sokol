@@ -36,6 +36,9 @@
 -DLOW_LEVEL_RENDERING
 -DCONTOUR_RECURSIVE
 >
+;Build Shader
+shdc --input {pRiveSokol}/shaders.glsl --output {pRiveSokol}/shaders.glsl.h --slang glsl330:glsl100:glsl300es
+>
 ;Build rive sokol
 -c {pRiveSokol}rive/ -o obj/{sOut}/lib/rive_sokol/
 -{vIncl}
