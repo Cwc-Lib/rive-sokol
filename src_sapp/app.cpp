@@ -1553,12 +1553,13 @@ static void frame(void) {
 
             artboardLoaded = true;
         }
-
+		
+#ifdef HasImGUI
         if (!artboardLoaded)
         {
             //ImGui::Text("Drag and drop .riv file(s) to preview them.");
         }
-#ifdef HasImGUI
+
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
