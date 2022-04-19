@@ -3,6 +3,10 @@
 #define SOKOL_IMPL
 #define SOKOL_IMGUI_IMPL
 
+#ifdef SOKOL_GLCORE33
+#define HasImGUI
+#endif
+
 #include "sokol_app.h"
 #include "sokol_gfx.h"
 #include "sokol_glue.h"
@@ -496,8 +500,10 @@ static void AppDrawImgui(ImDrawData* drawData)
     // render the command list
     sg_apply_pipeline(g_app.m_ImguiPipeline);
     vs_imgui_params_t vs_params;
+	#ifdef HasImGUI
     vs_params.x = ImGui::GetIO().DisplaySize.x;
     vs_params.y = ImGui::GetIO().DisplaySize.y;
+	#endif
     sg_apply_uniforms(SG_SHADERSTAGE_VS, 0, SG_RANGE(vs_params));
     for (int cl_index = 0; cl_index < drawData->CmdListsCount; cl_index++)
     {
@@ -1376,7 +1382,7 @@ void init(void) {
 
 	add_assets();
 
-
+#ifdef HasImGUI
     ////////////////////////////////////////////////////
     // Imgui setup
     ////////////////////////////////////////////////////
@@ -1468,7 +1474,7 @@ void init(void) {
     imguiPipelineDesc.colors[0].blend.dst_factor_rgb = SG_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
     imguiPipelineDesc.colors[0].write_mask           = SG_COLORMASK_RGB;
     g_app.m_ImguiPipeline                            = sg_make_pipeline(&imguiPipelineDesc);
-  
+#endif
 }
 
 static void frame(void) {
@@ -1489,6 +1495,7 @@ static void frame(void) {
 	
 
         dt             = (float) stm_sec(stm_laptime(&timeFrame));
+#ifdef HasImGUI
         ImGuiIO& io    = ImGui::GetIO();
         io.DisplaySize = ImVec2(float(windowWidth), float(windowHeight));
         io.DeltaTime   = dt;
@@ -1520,7 +1527,7 @@ static void frame(void) {
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
-
+#endif
         bool artboardLoaded = false;
         for (int i = 0; i < App::MAX_ARTBOARD_CONTEXTS; ++i)
         {
@@ -1533,7 +1540,7 @@ static void frame(void) {
 
             char cloneCountLabel[64];
             snprintf(cloneCountLabel, sizeof(cloneCountLabel), "%d: Clone Count", i);
-
+#ifdef HasImGUI
             ImGui::Text("Artboard %d: '%s'", i, ctx.m_Artboards[0].m_Artboard->name().c_str());
             if (ImGui::Button("x"))
             {
@@ -1541,6 +1548,7 @@ static void frame(void) {
             }
             ImGui::SameLine();
             ImGui::SliderInt(cloneCountLabel, &ctx.m_CloneCount, 1, 10);
+#endif
             UpdateArtboardCloneCount(ctx);
 
             artboardLoaded = true;
@@ -1548,9 +1556,9 @@ static void frame(void) {
 
         if (!artboardLoaded)
         {
-            ImGui::Text("Drag and drop .riv file(s) to preview them.");
+            //ImGui::Text("Drag and drop .riv file(s) to preview them.");
         }
-
+#ifdef HasImGUI
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
@@ -1573,7 +1581,7 @@ static void frame(void) {
 
         mouseLastX = io.MousePos.x;
         mouseLastY = io.MousePos.y;
-
+#endif
         AppConfigure((rive::RenderMode) renderModeChoice, contourQuality, backgroundColor, clippingSupported);
 
         timeUpdateRive = stm_now();
@@ -1585,16 +1593,13 @@ static void frame(void) {
         timeRenderRive = stm_now();
         AppRenderRive(windowWidth, windowHeight);
         timeRenderRive = stm_since(timeRenderRive);
-
+#ifdef HasImGUI
         ImGui::Render();
         AppDrawImgui(ImGui::GetDrawData());
-
+#endif
         sg_end_pass();
         sg_commit();
 
-  //      glfwSwapBuffers(g_app.m_Window);glfwPollEvents();
-    //}
-	
 }
 
 
