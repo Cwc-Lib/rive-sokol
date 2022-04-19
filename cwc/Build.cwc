@@ -1,6 +1,6 @@
 -{vFlag}=""
 >
--{sOut}={_sPlatform}_{_sConfig_Type}_{_sOpt}
+-{sOut}={_sPlatform}_{_sOpt}_{_sConfig_Type}
 >
 -{p3p}=../third-party/
 -{pRive}=../rive-cpp_low_level_rendering/
@@ -52,7 +52,7 @@ shdc --input {pRiveSokol}/shaders.glsl --output {pRiveSokol}/shaders.glsl.h --sl
 ;-o obj/{sOut}/lib/ -#To Lib/{sOut}/rive.{_sDynamic}
 >
 ;Generate Static Lib
--o obj/{sOut}/lib/ -#To Lib/{sOut}/rive.a
+-o obj/{sOut}/lib/ -#To Lib/{sOut}/librive.a
 >
 ;Build stb
 -c {p3p}stb/ -o obj/{sOut}/stb/
