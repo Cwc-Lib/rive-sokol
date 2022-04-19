@@ -700,7 +700,13 @@ void init(void) {
     ub.uniforms[0].name              = "disp_size";
     ub.uniforms[0].type              = SG_UNIFORMTYPE_FLOAT2;
     imguiShaderDesc.vs.source =
-        "#version 330\n"
+	
+#ifdef SOKOL_GLCORE33
+ "#version 330\n" 
+#else
+"#version 300 es\n" 
+#endif
+
         "uniform vec2 disp_size;\n"
         "layout(location=0) in vec2 position;\n"
         "layout(location=1) in vec2 texcoord0;\n"
@@ -715,7 +721,13 @@ void init(void) {
     imguiShaderDesc.fs.images[0].name       = "tex";
     imguiShaderDesc.fs.images[0].image_type = SG_IMAGETYPE_2D;
     imguiShaderDesc.fs.source =
-        "#version 330\n"
+	
+#ifdef SOKOL_GLCORE33
+ "#version 330\n" 
+#else
+"#version 300 es\n" 
+#endif
+		"precision mediump float;"
         "uniform sampler2D tex;\n"
         "in vec2 uv;\n"
         "in vec4 color;\n"
