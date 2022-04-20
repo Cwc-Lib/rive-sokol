@@ -6,7 +6,7 @@
 -{pRive}=../rive-cpp_low_level_rendering/
 ;-{pRiveSokol}=../src_glfw/
 -{pRiveSokol}=../src_sapp/
--{pTess}={p3p}libtess2/
+-{pTess}={p3p}libtess/
 ;-{pGLFW}=../GLFW/
 ;-{pGLFWsrc}=../GLFW/src/
 -{pRc}=../Rc/
