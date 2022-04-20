@@ -45,7 +45,7 @@ shdc --input {pRiveSokol}/shaders.glsl --output {pRiveSokol}/shaders.glsl.h --sl
 -{vOS_Flag}
 >
 ;Build libtess2
--c {p3p}libtess2/Source/ -o obj/{sOut}/lib/libtess2/
+-c {p3p}libtess/Source/ -o obj/{sOut}/lib/libtess/
 -{vIncl} -{vOS_Flag} -{vInclEx}
 >
 ;Generate Dynamic Lib
