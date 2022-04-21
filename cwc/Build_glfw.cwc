@@ -33,11 +33,8 @@
 -DLOW_LEVEL_RENDERING
 -DCONTOUR_RECURSIVE
 >
-;Generate Dynamic Lib
-;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.{_sDynamic}
->
-;Generate Static Lib
-;-o obj/{sOut}/lib/ -#To Lib/{sOut}/box2d.a
+;Build Shader
+shdc --input {pRiveSokol}/shaders.glsl --output {pRiveSokol}/shaders.glsl.h --slang glsl330:glsl100:glsl300es
 >
 ;Build stb
 -c {p3p}stb/ -o obj/{sOut}/stb/
