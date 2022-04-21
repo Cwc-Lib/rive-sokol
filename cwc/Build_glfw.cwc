@@ -5,7 +5,7 @@
 -{p3p}=../third-party/
 -{pRive}=../rive-cpp_low_level_rendering/
 -{pRiveSokol}=../src_glfw/
--{pTess}={p3p}libtess2/
+-{pTess}={p3p}libtess/
 -{pGLFW}=../GLFW/
 -{pGLFWsrc}=../GLFW/src/
 >
@@ -48,7 +48,7 @@
 -{vIncl} -{vOS_Flag} -{vInclEx}
 >
 ;Build libtess2
--c {p3p}libtess2/Source/ -o obj/{sOut}/libtess2/
+-c {p3p}libtess/Source/ -o obj/{sOut}/libtess/
 -{vIncl} -{vOS_Flag} -{vInclEx}
 >
 ;Build sokol
